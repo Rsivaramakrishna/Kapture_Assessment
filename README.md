@@ -1,9 +1,3 @@
-impleentation plan :
-
-I have successfully completed both Task 1 and Task 2 of the Kapture Finance AI Delivery Take-Home Assignment.
-
-Below is a summary of the accomplishments and the final project structure delivered in your workspace:
-
 📁 Project Deliverables in Workspace
 Task 1: High-Level Design (HLD)
 HLD.md
@@ -34,5 +28,7 @@ test_webhook.py
  — Automated test suite verifying tool execution, authentication locking, limit thresholds, and CRM writebacks.
 requirements.txt
  — Dependency list.
-README.md
- — Detailed explanation of setup steps, architectural decisions, and testing at scale.
+
+
+
+
