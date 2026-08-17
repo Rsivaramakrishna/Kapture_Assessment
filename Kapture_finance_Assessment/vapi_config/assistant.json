@@ -1,0 +1,35 @@
+{
+  "name": "Maya - Kapture Finance Collections",
+  "firstMessage": "Hello, am I speaking with Mr. Mr. Rahul Sharma?",
+  "transcriber": {
+    "provider": "deepgram",
+    "model": "nova-2",
+    "language": "multi"
+  },
+  "model": {
+    "provider": "openai",
+    "model": "gpt-4o",
+    "temperature": 0.0,
+    "systemPrompt": "Please refer to the text in system_prompt.txt for the full configuration. This prompt enforces authentication before debt presentation and compliance under RBI guidelines.",
+    "toolIds": []
+  },
+  "voice": {
+    "provider": "cartesia",
+    "voiceId": "ba2384cc-36af-48a0-bb62-23c21c7d3db7",
+    "emotion": [
+      "positivity:high",
+      "curiosity:low"
+    ]
+  },
+  "silenceTimeoutSeconds": 15,
+  "maxDurationSeconds": 600,
+  "backgroundSound": "office",
+  "clientMessages": [
+    "transcript",
+    "tool-calls",
+    "speech-update"
+  ],
+  "serverMessages": [
+    "tool-calls"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "cust_rahul_001": {
+    "customer_id": "cust_rahul_001",
+    "name": "Rahul Sharma",
+    "phone": "+91 98765 43210",
+    "loan_id": "LN-KAP-88220",
+    "overdue_emi_amount": 8499.0,
+    "due_date": "2026-08-05",
+    "days_past_due": 12,
+    "dob": "15-08-1990",
+    "last4PAN": "5241",
+    "status": "ESCALATED",
+    "verification_status": "VERIFIED",
+    "failed_verification_attempts": 0,
+    "promise_to_pay_date": "2026-08-18",
+    "promise_to_pay_amount": 8499,
+    "payment_link_sent": true,
+    "payment_link_method": "UPI",
+    "disposition_code": "ALREADY_PAID",
+    "call_notes": "Spoke to Rahul Sharma, verified PAN card, sent UPI payment link. Customer promised payment tonight.",
+    "calls_count": 3
+  }
+}

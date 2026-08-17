@@ -1,0 +1,39 @@
+{
+  "type": "function",
+  "messages": [
+    {
+      "type": "request-start",
+      "content": "Updating call records..."
+    },
+    {
+      "type": "request-complete",
+      "content": "Call outcome recorded."
+    }
+  ],
+  "function": {
+    "name": "mark_disposition",
+    "description": "Records the final call disposition status, category, and descriptive call notes in the CRM database.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "customer_id": {
+          "type": "string",
+          "description": "Unique database ID of the customer (e.g. cust_rahul_001)."
+        },
+        "disposition_code": {
+          "type": "string",
+          "description": "The final call disposition code. Must be one of: 'PTP' (Promise to Pay), 'ALREADY_PAID', 'DISPUTED', 'WRONG_NUMBER', 'DNC' (Do Not Call), 'THIRD_PARTY', 'UNVERIFIED' (Failed security verification), 'HOSTILE', 'CALL_BACK'."
+        },
+        "call_notes": {
+          "type": "string",
+          "description": "Descriptive summary details of the call (e.g. 'Rahul Sharma promised to pay ₹8499 by tomorrow using UPI. Sent link.')."
+        }
+      },
+      "required": [
+        "customer_id",
+        "disposition_code",
+        "call_notes"
+      ]
+    }
+  }
+}

@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kapture Finance - Maya Voicebot Webhook Console</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #0f0c20 0%, #15102a 50%, #06040d 100%);
+      --glass-bg: rgba(25, 20, 50, 0.45);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      --primary: #8a2be2;
+      --primary-glow: rgba(138, 43, 226, 0.4);
+      --secondary: #00f2fe;
+      --secondary-glow: rgba(0, 242, 254, 0.3);
+      --success: #00ff87;
+      --success-glow: rgba(0, 255, 135, 0.3);
+      --warning: #ffb600;
+      --danger: #ff0055;
+      --danger-glow: rgba(255, 0, 85, 0.3);
+      --text: #f0f0ff;
+      --text-muted: #a09cb0;
+      --panel-header: rgba(30, 25, 60, 0.6);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    header {
+      background: rgba(10, 8, 24, 0.85);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--glass-border);
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-badge {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.2rem;
+      box-shadow: 0 0 15px var(--primary-glow);
+    }
+
+    .logo-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .logo-title span {
+      background: linear-gradient(to right, var(--secondary), var(--primary));
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .api-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 6px 14px;
+      border-radius: 30px;
+      border: 1px solid var(--glass-border);
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--success);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--success);
+      animation: pulse 1.8s infinite;
+    }
+
+    .dashboard-container {
+      flex: 1;
+      padding: 30px 40px;
+      display: grid;
+      grid-template-columns: 350px 1fr 320px;
+      gap: 25px;
+      max-width: 1800px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    @media (max-width: 1200px) {
+      .dashboard-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Glass Panels */
+    .panel {
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      box-shadow: var(--glass-shadow);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .panel:hover {
+      border-color: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
+    }
+
+    .panel-header {
+      background: var(--panel-header);
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--glass-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .panel-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .panel-body {
+      padding: 20px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    /* CRM Panel Styles */
+    .customer-card {
+      text-align: center;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      margin-bottom: 20px;
+    }
+
+    .avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1e1035 0%, #3a155c 100%);
+      margin: 0 auto 12px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--primary);
+      box-shadow: 0 0 15px var(--primary-glow);
+    }
+
+    .avatar-text {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--secondary);
+    }
+
+    .customer-name {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .customer-phone {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .info-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.95rem;
+    }
+
+    .info-label {
+      color: var(--text-muted);
+    }
+
+    .info-value {
+      font-weight: 500;
+      text-align: right;
+    }
+
+    .badge {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-success {
+      background: rgba(0, 255, 135, 0.15);
+      color: var(--success);
+      border: 1px solid rgba(0, 255, 135, 0.3);
+      box-shadow: 0 0 10px rgba(0, 255, 135, 0.1);
+    }
+
+    .badge-danger {
+      background: rgba(255, 0, 85, 0.15);
+      color: var(--danger);
+      border: 1px solid rgba(255, 0, 85, 0.3);
+      box-shadow: 0 0 10px rgba(255, 0, 85, 0.1);
+    }
+
+    .badge-warning {
+      background: rgba(255, 182, 0, 0.15);
+      color: var(--warning);
+      border: 1px solid rgba(255, 182, 0, 0.3);
+    }
+
+    .badge-primary {
+      background: rgba(138, 43, 226, 0.15);
+      color: var(--secondary);
+      border: 1px solid rgba(138, 43, 226, 0.3);
+    }
+
+    .badge-neutral {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Webhook Logs Panel */
+    .logs-container {
+      display: flex;
+      flex-direction: column;
+      height: 480px;
+    }
+
+    .logs-terminal {
+      flex: 1;
+      background: rgba(5, 3, 12, 0.8);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      padding: 15px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.6);
+    }
+
+    .log-line {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .log-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+    }
+
+    .log-time {
+      color: #666;
+    }
+
+    .log-src {
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .src-system { color: var(--secondary); }
+    .src-bot { color: var(--primary); }
+    .src-simulator { color: var(--warning); }
+
+    .log-msg {
+      color: #e0dcf5;
+      word-break: break-all;
+    }
+
+    /* Simulator Styles */
+    .simulator-form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .sim-group {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      padding: 15px;
+    }
+
+    .sim-group-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--secondary);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      padding-bottom: 6px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--glass-border);
+      border-radius: 6px;
+      color: var(--text);
+      padding: 8px 12px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 8px var(--primary-glow);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, #a04ef6 100%);
+      color: #fff;
+      box-shadow: 0 4px 15px var(--primary-glow);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 6px 20px rgba(138, 43, 226, 0.6);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #1b264f 0%, #114b5f 100%);
+      color: var(--secondary);
+      border: 1px solid rgba(0, 242, 254, 0.3);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(0, 242, 254, 0.1);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #40061e 0%, #8b002c 100%);
+      color: #ffb8c6;
+      border: 1px solid rgba(255, 0, 85, 0.3);
+    }
+
+    .btn-danger:hover {
+      background: rgba(255, 0, 85, 0.1);
+    }
+
+    /* Mock Phone Display */
+    .phone-container {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .phone-frame {
+      width: 250px;
+      height: 380px;
+      background: #0d091a;
+      border: 8px solid #2e2842;
+      border-radius: 36px;
+      padding: 15px 10px;
+      box-shadow: 0 15px 45px rgba(0,0,0,0.8);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .phone-speaker {
+      width: 60px;
+      height: 5px;
+      background: #2e2842;
+      border-radius: 10px;
+      margin: 0 auto 15px auto;
+    }
+
+    .phone-screen {
+      flex: 1;
+      background: #151124;
+      border-radius: 20px;
+      overflow-y: auto;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .sms-bubble {
+      background: #2a1f4d;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 14px 14px 14px 4px;
+      padding: 8px 12px;
+      font-size: 0.78rem;
+      max-width: 90%;
+      align-self: flex-start;
+      line-height: 1.35;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+      animation: slideIn 0.3s ease;
+    }
+
+    .sms-time {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+      text-align: right;
+    }
+
+    .no-sms {
+      color: #555;
+      font-size: 0.8rem;
+      text-align: center;
+      margin: auto;
+      font-style: italic;
+    }
+
+    /* Animations */
+    @keyframes pulse {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+
+    @keyframes slideIn {
+      from { transform: translateY(10px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0,0,0,0.1);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Call Simulator Chat Styles */
+    .chat-bubble-bot {
+      background: #3c237d;
+      border: 1px solid rgba(138, 43, 226, 0.3);
+      border-radius: 14px 14px 14px 4px;
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      max-width: 85%;
+      align-self: flex-start;
+      line-height: 1.4;
+      box-shadow: 0 4px 15px rgba(138, 43, 226, 0.1);
+      animation: slideIn 0.3s ease;
+      color: #f0f0ff;
+      margin-bottom: 8px;
+    }
+
+    .chat-bubble-user {
+      background: #114b5f;
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      border-radius: 14px 14px 4px 14px;
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      max-width: 85%;
+      align-self: flex-end;
+      line-height: 1.4;
+      box-shadow: 0 4px 15px rgba(0, 242, 254, 0.1);
+      animation: slideIn 0.3s ease;
+      color: #e0faff;
+      margin-bottom: 8px;
+    }
+
+    .chat-bubble-system {
+      font-size: 0.78rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-style: italic;
+      margin: 6px 0;
+      align-self: center;
+    }
+
+    .tab-active {
+      background: linear-gradient(135deg, var(--primary) 0%, #a04ef6 100%) !important;
+      color: #fff !important;
+      box-shadow: 0 4px 15px var(--primary-glow) !important;
+      border-color: rgba(255,255,255,0.1) !important;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo-container">
+      <div class="logo-badge">K</div>
+      <div class="logo-title">Kapture <span>Finance</span></div>
+    </div>
+    <div class="api-status">
+      <div class="status-dot"></div>
+      Webhook Gateway Live (Active)
+    </div>
+  </header>
+
+  <div class="dashboard-container">
+    
+    <!-- LEFT PANEL: CRM DB View -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          CRM Customer File
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="customer-card">
+          <div class="avatar">
+            <span class="avatar-text">RS</span>
+          </div>
+          <div class="customer-name" id="crm-name">Rahul Sharma</div>
+          <div class="customer-phone" id="crm-phone">+91 98765 43210</div>
+        </div>
+        
+        <div class="info-list">
+          <div class="info-item">
+            <span class="info-label">Customer ID:</span>
+            <span class="info-value" id="crm-cust-id">cust_rahul_001</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Loan Account ID:</span>
+            <span class="info-value" id="crm-loan-id">LN-KAP-88220</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Overdue Amount:</span>
+            <span class="info-value" style="color:var(--danger); font-weight:700;" id="crm-emi">₹8,499.00</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Days Past Due (DPD):</span>
+            <span class="info-value badge badge-danger" id="crm-dpd">12 days DPD</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Secured DOB / PAN:</span>
+            <span class="info-value" id="crm-auth-details">15-08-1990 / 5241</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Verification Status:</span>
+            <span class="badge" id="crm-verify-status">UNVERIFIED</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Failed Auth Attempts:</span>
+            <span class="info-value" id="crm-failed-attempts">0</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Promise To Pay Date:</span>
+            <span class="info-value" id="crm-ptp-date">--</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Payment Link Sent:</span>
+            <span class="badge" id="crm-payment-sent">NO</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Final Disposition:</span>
+            <span class="badge badge-neutral" id="crm-disposition">--</span>
+          </div>
+          <div class="info-item" style="flex-direction: column; align-items: flex-start; gap: 4px;">
+            <span class="info-label">Call Outcome Summary Notes:</span>
+            <span class="info-value" style="text-align: left; font-size: 0.85rem; word-break: break-word; color:#b0acc0;" id="crm-notes">--</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MIDDLE PANEL: Webhook Server Logs -->
+    <div class="panel" style="display: flex; flex-direction: column;">
+      <div class="panel-header">
+        <div class="panel-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+          Active Call event Logs (Vapi Webhook Traces)
+        </div>
+        <button class="btn btn-secondary" onclick="resetDatabase()" style="width: auto; padding: 4px 10px; font-size: 0.75rem;">Reset CRM Data</button>
+      </div>
+      <div class="panel-body logs-container">
+        <div class="logs-terminal" id="terminal-logs">
+          <!-- Logs will stream here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL: Call & Tool Simulator -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+          SMS Delivery Dispatcher
+        </div>
+      </div>
+      <div class="panel-body" style="padding-top: 10px;">
+        
+        <div class="phone-container">
+          <div class="phone-frame">
+            <div class="phone-speaker"></div>
+            <div class="phone-screen" id="phone-screen">
+              <div class="no-sms" id="no-sms-text">No incoming payments links dispatched.</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Tabs for Simulator mode selection -->
+        <div style="display: flex; background: rgba(0,0,0,0.3); border-radius: 8px; padding: 4px; margin-top: 20px; border: 1px solid var(--glass-border);">
+          <button id="btn-tab-call" class="btn tab-active" onclick="toggleSimTab('call')" style="padding: 6px 12px; font-size: 0.8rem; border-radius: 6px; background: transparent; color: var(--text-muted); flex: 1;">Interactive Call</button>
+          <button id="btn-tab-manual" class="btn" onclick="toggleSimTab('manual')" style="padding: 6px 12px; font-size: 0.8rem; border-radius: 6px; background: transparent; color: var(--text-muted); flex: 1;">Manual Tools</button>
+        </div>
+
+        <!-- TAB 1: Guided Interactive Call Roleplayer -->
+        <div id="sim-call-container" style="margin-top: 15px; display: flex; flex-direction: column; gap: 12px;">
+          <div class="call-simulator-console" style="background: rgba(5, 3, 12, 0.6); border: 1px solid var(--glass-border); border-radius: 12px; padding: 15px; display: flex; flex-direction: column; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; margin-bottom: 12px;">
+              <span>Call State: <strong id="call-state-badge" style="color: var(--warning);">IDLE</strong></span>
+              <span id="call-duration">00:00</span>
+            </div>
+            
+            <div id="call-chat-area" style="display: flex; flex-direction: column; gap: 8px; height: 200px; overflow-y: auto; padding-right: 5px; margin-bottom: 15px;">
+              <div class="chat-bubble-system">Click "Start Outbound Call" to begin simulating the collection call for Rahul Sharma.</div>
+            </div>
+
+            <div id="call-options-container" style="display: flex; flex-direction: column; gap: 8px;">
+              <button class="btn btn-primary" onclick="startInteractiveCall()">📞 Start Outbound Call</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: Manual Tool Runner -->
+        <div id="sim-manual-container" style="margin-top: 15px; display: none;">
+          <div class="sim-group" style="padding: 0; background: transparent; border: none;">
+            <div class="simulator-form">
+              
+              <div>
+                <label for="tool-select">Select Tool Endpoint:</label>
+                <select id="tool-select" onchange="toggleToolForm()">
+                  <option value="verify_customer">verify_customer</option>
+                  <option value="log_promise_to_pay">log_promise_to_pay</option>
+                  <option value="send_payment_link">send_payment_link</option>
+                  <option value="mark_disposition">mark_disposition</option>
+                  <option value="escalate_to_agent">escalate_to_agent</option>
+                </select>
+              </div>
+
+              <!-- Dynamic Subforms -->
+              <div id="form-verify_customer">
+                <div class="form-row">
+                  <div>
+                    <label>DOB (DD-MM-YYYY)</label>
+                    <input type="text" id="verify-dob" value="15-08-1990">
+                  </div>
+                  <div>
+                    <label>PAN Last 4</label>
+                    <input type="text" id="verify-pan" value="5241">
+                  </div>
+                </div>
+              </div>
+
+              <div id="form-log_promise_to_pay" style="display:none;">
+                <div class="form-row">
+                  <div>
+                    <label>PTP Date</label>
+                    <input type="date" id="ptp-date-input" value="">
+                  </div>
+                  <div>
+                    <label>PTP Amount (₹)</label>
+                    <input type="number" id="ptp-amount-input" value="8499">
+                  </div>
+                </div>
+              </div>
+
+              <div id="form-send_payment_link" style="display:none;">
+                <div>
+                  <label>Preferred Payment Mode</label>
+                  <select id="link-method">
+                    <option value="UPI">UPI (GooglePay/PhonePe)</option>
+                    <option value="Card">Debit Card</option>
+                    <option value="NetBanking">NetBanking</option>
+                    <option value="Any">Any Mode</option>
+                  </select>
+                </div>
+              </div>
+
+              <div id="form-mark_disposition" style="display:none;">
+                <div class="form-row">
+                  <div style="grid-column: span 2;">
+                    <label>Disposition Code</label>
+                    <select id="disp-code">
+                      <option value="PTP">PTP (Promise to Pay)</option>
+                      <option value="ALREADY_PAID">ALREADY_PAID</option>
+                      <option value="DISPUTED">DISPUTED</option>
+                      <option value="WRONG_NUMBER">WRONG_NUMBER</option>
+                      <option value="DNC">DNC (Do Not Call)</option>
+                      <option value="THIRD_PARTY">THIRD_PARTY</option>
+                      <option value="UNVERIFIED">UNVERIFIED (Auth Failed)</option>
+                      <option value="CALL_BACK">CALL_BACK (Callback)</option>
+                    </select>
+                  </div>
+                </div>
+                <div style="margin-top: 10px;">
+                  <label>Call Summary Notes</label>
+                  <textarea id="disp-notes" rows="2">Spoke to Rahul Sharma, verified PAN card, sent UPI payment link. Customer promised payment tonight.</textarea>
+                </div>
+              </div>
+
+              <div id="form-escalate_to_agent" style="display:none;">
+                <div>
+                  <label>Reason for Escalation</label>
+                  <select id="escalate-reason">
+                    <option value="Dispute">Disputes EMI Amount / Validity</option>
+                    <option value="Financial Hardship">Severe Financial Hardship / Job Loss</option>
+                    <option value="Hostile User">Abusive or Threatening Behavior</option>
+                    <option value="Unresolved Language Switch">Bilingual/Regional Language Handback</option>
+                  </select>
+                </div>
+              </div>
+
+              <button class="btn btn-primary" onclick="executeSimulatorTool()">Trigger Tool Call</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Set default PTP date to tomorrow
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const yyyy = tomorrow.getFullYear();
+    const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
+    const dd = String(tomorrow.getDate()).padStart(2, '0');
+    document.getElementById('ptp-date-input').value = `${yyyy}-${mm}-${dd}`;
+
+    // Webhook log elements
+    const logsTerminal = document.getElementById("terminal-logs");
+    
+    // Toggle active simulation form based on dropdown selection
+    function toggleToolForm() {
+      const selectedTool = document.getElementById("tool-select").value;
+      const subforms = [
+        "verify_customer",
+        "log_promise_to_pay",
+        "send_payment_link",
+        "mark_disposition",
+        "escalate_to_agent"
+      ];
+      
+      subforms.forEach(formName => {
+        const formEl = document.getElementById("form-" + formName);
+        if (formName === selectedTool) {
+          formEl.style.display = "block";
+        } else {
+          formEl.style.display = "none";
+        }
+      });
+    }
+
+    // Refresh dashboard values from the backend APIs
+    async function updateDashboardData() {
+      try {
+        const res = await fetch("/api/crm");
+        const rahul = await res.json();
+        
+        // Update CRM view elements
+        document.getElementById("crm-verify-status").innerText = rahul.verification_status;
+        document.getElementById("crm-verify-status").className = "badge " + 
+          (rahul.verification_status === "VERIFIED" ? "badge-success" : 
+           (rahul.verification_status === "FAILED" ? "badge-danger" : "badge-neutral"));
+        
+        document.getElementById("crm-failed-attempts").innerText = rahul.failed_verification_attempts;
+        document.getElementById("crm-ptp-date").innerText = rahul.promise_to_pay_date ? `${rahul.promise_to_pay_date} (₹${rahul.promise_to_pay_amount})` : "--";
+        
+        document.getElementById("crm-payment-sent").innerText = rahul.payment_link_sent ? "YES (" + rahul.payment_link_method + ")" : "NO";
+        document.getElementById("crm-payment-sent").className = "badge " + (rahul.payment_link_sent ? "badge-success" : "badge-neutral");
+        
+        document.getElementById("crm-disposition").innerText = rahul.disposition_code || "--";
+        document.getElementById("crm-disposition").className = "badge " + 
+          (rahul.disposition_code === "PTP" ? "badge-success" : 
+           (rahul.disposition_code === "DNC" || rahul.disposition_code === "WRONG_NUMBER" ? "badge-danger" : 
+            (rahul.disposition_code ? "badge-warning" : "badge-neutral")));
+            
+        document.getElementById("crm-notes").innerText = rahul.call_notes || "--";
+
+        // Poll SMS Logs
+        const smsRes = await fetch("/api/sms-logs");
+        const smsLogs = await smsRes.json();
+        const phoneScreen = document.getElementById("phone-screen");
+        
+        if (smsLogs.length > 0) {
+          document.getElementById("no-sms-text").style.display = "none";
+          // Render SMS messages
+          phoneScreen.innerHTML = smsLogs.map(sms => `
+            <div class="sms-bubble">
+              <strong>Kapture Pay</strong><br>
+              ${sms.message}
+              <div class="sms-time">${sms.timestamp}</div>
+            </div>
+          `).join("");
+        } else {
+          phoneScreen.innerHTML = `<div class="no-sms" id="no-sms-text">No incoming payments links dispatched.</div>`;
+        }
+
+        // Poll Call Event Log Traces
+        const logRes = await fetch("/api/call-logs");
+        const logData = await logRes.json();
+        
+        logsTerminal.innerHTML = logData.map(log => {
+          let srcClass = "src-system";
+          if (log.source.includes("BOT")) srcClass = "src-bot";
+          if (log.source.includes("SIMULATOR")) srcClass = "src-simulator";
+          
+          return `
+            <div class="log-line">
+              <div class="log-meta">
+                <span class="log-src ${srcClass}">${log.source}</span>
+                <span class="log-time">${log.timestamp}</span>
+              </div>
+              <div class="log-msg">${log.message}</div>
+            </div>
+          `;
+        }).join("");
+        
+        // Auto scroll
+        logsTerminal.scrollTop = logsTerminal.scrollHeight;
+
+      } catch (err) {
+        console.error("Polling error:", err);
+      }
+    }
+
+    // Call API to execute simulation
+    async function executeSimulatorTool() {
+      const selectedTool = document.getElementById("tool-select").value;
+      const payload = {
+        name: selectedTool,
+        arguments: {
+          customer_id: "cust_rahul_001"
+        }
+      };
+
+      if (selectedTool === "verify_customer") {
+        payload.arguments.dob = document.getElementById("verify-dob").value;
+        payload.arguments.last4PAN = document.getElementById("verify-pan").value;
+      } else if (selectedTool === "log_promise_to_pay") {
+        payload.arguments.ptp_date = document.getElementById("ptp-date-input").value;
+        payload.arguments.ptp_amount = parseFloat(document.getElementById("ptp-amount-input").value);
+      } else if (selectedTool === "send_payment_link") {
+        payload.arguments.payment_method = document.getElementById("link-method").value;
+      } else if (selectedTool === "mark_disposition") {
+        payload.arguments.disposition_code = document.getElementById("disp-code").value;
+        payload.arguments.call_notes = document.getElementById("disp-notes").value;
+      } else if (selectedTool === "escalate_to_agent") {
+        payload.arguments.reason = document.getElementById("escalate-reason").value;
+      }
+
+      try {
+        const res = await fetch("/api/simulate-tool", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+        updateDashboardData();
+      } catch (err) {
+        console.error("Simulation failed:", err);
+      }
+    }
+
+    // Call API to reset database
+    async function resetDatabase() {
+      try {
+        await fetch("/api/reset", { method: "POST" });
+        updateDashboardData();
+      } catch (err) {
+        console.error("Reset failed:", err);
+      }
+    }
+
+    // Refresh every 1.5 seconds
+    setInterval(updateDashboardData, 1500);
+    
+    // Initial fetch on boot
+    updateDashboardData();
+
+    // --- Guided Interactive Call Simulation Logic ---
+    let simState = 'IDLE';
+    let simAuthAttempts = 0;
+    let callTimerInterval = null;
+    let callSeconds = 0;
+
+    function toggleSimTab(tab) {
+      document.getElementById('btn-tab-call').className = 'btn' + (tab === 'call' ? ' tab-active' : '');
+      document.getElementById('btn-tab-manual').className = 'btn' + (tab === 'manual' ? ' tab-active' : '');
+      
+      document.getElementById('sim-call-container').style.display = tab === 'call' ? 'flex' : 'none';
+      document.getElementById('sim-manual-container').style.display = tab === 'manual' ? 'block' : 'none';
+    }
+
+    function formatCallTime(secs) {
+      const m = String(Math.floor(secs / 60)).padStart(2, '0');
+      const s = String(secs % 60).padStart(2, '0');
+      return `${m}:${s}`;
+    }
+
+    function startInteractiveCall() {
+      simState = 'GREETING';
+      simAuthAttempts = 0;
+      callSeconds = 0;
+      
+      document.getElementById('call-state-badge').innerText = 'RINGING';
+      document.getElementById('call-state-badge').style.color = 'var(--secondary)';
+      
+      const chatArea = document.getElementById('call-chat-area');
+      chatArea.innerHTML = `<div class="chat-bubble-system">📞 Outbound call established with Rahul Sharma...</div>`;
+      
+      if(callTimerInterval) clearInterval(callTimerInterval);
+      callTimerInterval = setInterval(() => {
+        callSeconds++;
+        document.getElementById('call-duration').innerText = formatCallTime(callSeconds);
+      }, 1000);
+
+      setTimeout(() => {
+        document.getElementById('call-state-badge').innerText = 'UNAUTHENTICATED';
+        document.getElementById('call-state-badge').style.color = 'var(--warning)';
+        addCallBubble('bot', "Hello, am I speaking with Mr. Rahul Sharma?");
+        renderCallControls();
+      }, 1200);
+    }
+
+    function addCallBubble(sender, text) {
+      const chatArea = document.getElementById('call-chat-area');
+      const bubble = document.createElement('div');
+      bubble.className = sender === 'bot' ? 'chat-bubble-bot' : 'chat-bubble-user';
+      bubble.innerText = text;
+      chatArea.appendChild(bubble);
+      chatArea.scrollTop = chatArea.scrollHeight;
+    }
+
+    function addCallSystemMessage(text) {
+      const chatArea = document.getElementById('call-chat-area');
+      const bubble = document.createElement('div');
+      bubble.className = 'chat-bubble-system';
+      bubble.innerText = text;
+      chatArea.appendChild(bubble);
+      chatArea.scrollTop = chatArea.scrollHeight;
+    }
+
+    async function triggerSimulatedAPICall(toolName, args) {
+      try {
+        await fetch("/api/simulate-tool", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: toolName, arguments: args })
+        });
+        updateDashboardData();
+      } catch(e) {
+        console.error("API simulation error:", e);
+      }
+    }
+
+    function chooseCallDialog(userText, nextState, apiCall = null) {
+      addCallBubble('user', userText);
+      document.getElementById('call-options-container').innerHTML = `<div class="chat-bubble-system" style="margin: 0 auto;">Maya is speaking...</div>`;
+      
+      setTimeout(async () => {
+        if (apiCall) {
+          addCallSystemMessage(`[System API Hook: ${apiCall.toolName}(${JSON.stringify(apiCall.args)})]`);
+          await triggerSimulatedAPICall(apiCall.toolName, apiCall.args);
+        }
+        
+        simState = nextState;
+        renderCallSpeechAndControls();
+      }, 1000);
+    }
+
+    function renderCallSpeechAndControls() {
+      const badge = document.getElementById('call-state-badge');
+      const container = document.getElementById('call-options-container');
+      
+      switch (simState) {
+        case 'GREETING_REPLY_WHO':
+          addCallBubble('bot', "I am Maya from Kapture Finance, calling on a personal business matter. Am I speaking with Mr. Rahul Sharma?");
+          container.innerHTML = `
+            <button class="btn btn-secondary" onclick="chooseCallDialog('Yes, that is me.', 'AUTH')">Yes, that is me.</button>
+            <button class="btn btn-secondary" onclick="chooseCallDialog('No, this is wrong number.', 'END', {toolName: 'mark_disposition', args: {customer_id: 'cust_rahul_001', disposition_code: 'WRONG_NUMBER', call_notes: 'Recipient confirmed wrong number.'}})">No, wrong number.</button>
+          `;
+          break;
+          
+        case 'AUTH':
+          badge.innerText = 'AUTHENTICATING';
+          badge.style.color = 'var(--warning)';
+          addCallBubble('bot', "To ensure security, could you please verify your date of birth, or confirm the last 4 digits of your PAN card?");
+          container.innerHTML = `
+            <button class="btn btn-secondary" onclick="chooseCallDialog('My DOB is 15th August 1990.', 'DEBT_PRESENTATION', {toolName: 'verify_customer', args: {customer_id: 'cust_rahul_001', dob: '15-08-1990'}})">Verify with correct DOB (15-08-1990)</button>
+            <button class="btn btn-secondary" onclick="chooseCallDialog('The last 4 digits of my PAN is 5241.', 'DEBT_PRESENTATION', {toolName: 'verify_customer', args: {customer_id: 'cust_rahul_001', last4PAN: '5241'}})">Verify with correct PAN (5241)</button>
+            <button class="btn btn-secondary" onclick="handleAuthFailureSimulation('My DOB is 1st January 2000.')">Provide wrong DOB (Auth Fail)</button>
+            <button class="btn btn-secondary" onclick="chooseCallDialog('Why do you need my PAN? I won\\'t give it.', 'AUTH_EXPLAIN')">Refuse Verification</button>
+          `;
+          break;
+
+        case 'AUTH_EXPLAIN':
+          addCallBubble('bot', "I understand your concern, but for compliance and privacy regulations, I cannot reveal any account balance or debt details until we confirm identity. Can we verify your DOB or PAN?");
+          container.innerHTML = `
+            <button class="btn btn-secondary" onclick="chooseCallDialog('Okay, my PAN is 5241.', 'DEBT_PRESENTATION', {toolName: 'verify_customer', args: {customer_id: 'cust_rahul_001', last4PAN: '5241'}})">Provide PAN (5241)</button>
+            <button class="btn btn-secondary" onclick="chooseCallDialog('No, call back later.', 'END', {toolName: 'mark_disposition', args: {customer_id: 'cust_rahul_001', disposition_code: 'CALL_BACK', call_notes: 'User hung up during verification.'}})">Refuse and Hang up</button>
+          `;
+          break;
+
+        case 'DEBT_PRESENTATION':
+          badge.innerText = 'AUTHENTICATED';
+          badge.style.color = 'var(--success)';
+          addCallBubble('bot', "Thank you for verifying. I am calling regarding your Kapture Finance personal loan. Your monthly EMI of ₹8,499 was due on August 5th and is currently 12 days past due. Can you make this payment today?");
+          container.innerHTML = `
+            <button class="btn btn-secondary" onclick="chooseCallDialog('Yes, I can pay today.', 'PAYMENT_METHOD')">Yes, will pay today</button>
+            <button class="btn btn-secondary" onclick="chooseCallDialog('I already paid this yesterday.', 'ALREADY_PAID_FLOW')">I already paid yesterday</button>
+            <button class="btn btn-secondary" onclick="chooseCallDialog('I cannot pay right now, I lost my job.', 'HARDSHIP_FLOW')">Cannot pay (Financial Hardship)</button>
+            <button class="btn btn-secondary" onclick="chooseCallDialog('This is incorrect, I dispute this amount.', 'DISPUTE_FLOW')">Dispute amount</button>
+            <button class="btn btn-secondary" onclick="chooseCallDialog('I am busy, call me back tomorrow.', 'CALLBACK_FLOW')">Request Callback</button>
+            <button class="btn btn-secondary" onclick="chooseCallDialog('Stop calling me! Add me to Do Not Call.', 'END', {toolName: 'mark_disposition', args: {customer_id: 'cust_rahul_001', disposition_code: 'DNC', call_notes: 'Debtor requested Do Not Call registry.'}})">Request Do Not Call (DNC)</button>
+          `;
+          break;
+
+        case 'PAYMENT_METHOD':
+          addCallBubble('bot', "Great, will you be paying via UPI, Debit Card, or Netbanking?");
+          container.innerHTML = `
+            <button class="btn btn-secondary" onclick="handlePTPSimulation('UPI')">UPI (GooglePay/PhonePe)</button>
+            <button class="btn btn-secondary" onclick="handlePTPSimulation('Card')">Debit Card</button>
+          `;
+          break;
+
+        case 'HARDSHIP_FLOW':
+          addCallBubble('bot', "I understand, and we want to help you. Is it possible to make a partial payment of ₹4,000 today, and we can schedule the remaining next week?");
+          container.innerHTML = `
+            <button class="btn btn-secondary" onclick="handlePartialPTPSimulation()">Yes, I can pay ₹4,000 today</button>
+            <button class="btn btn-secondary" onclick="chooseCallDialog('No, I cannot pay anything.', 'END', {toolName: 'escalate_to_agent', args: {customer_id: 'cust_rahul_001', reason: 'Financial Hardship'}})">No, escalate call</button>
+          `;
+          break;
+
+        case 'ALREADY_PAID_FLOW':
+          addCallBubble('bot', "Thank you. Could you please share the payment date and the transaction reference number?");
+          container.innerHTML = `
+            <button class="btn btn-secondary" onclick="chooseCallDialog('I paid ₹8499 yesterday, ref TXN9982.', 'END', {toolName: 'mark_disposition', args: {customer_id: 'cust_rahul_001', disposition_code: 'ALREADY_PAID', call_notes: 'User claims paid yesterday. Ref TXN9982. CRM status updated to pending audit.'}})">Provide Ref: TXN9982</button>
+          `;
+          break;
+
+        case 'DISPUTE_FLOW':
+          addCallBubble('bot', "I apologize. I will log a formal dispute for you and transfer you to a supervisor to assist you further.");
+          container.innerHTML = `
+            <button class="btn btn-secondary" onclick="chooseCallDialog('Okay, transfer me.', 'END', {toolName: 'escalate_to_agent', args: {customer_id: 'cust_rahul_001', reason: 'Dispute'}})">Agree to Transfer</button>
+          `;
+          break;
+
+        case 'CALLBACK_FLOW':
+          addCallBubble('bot', "Sure, what is a better time to call you back?");
+          container.innerHTML = `
+            <button class="btn btn-secondary" onclick="chooseCallDialog('Call me tomorrow morning at 10 AM.', 'END', {toolName: 'mark_disposition', args: {customer_id: 'cust_rahul_001', disposition_code: 'CALL_BACK', call_notes: 'Rescheduled callback for tomorrow 10:00 AM.'}})">Tomorrow at 10 AM</button>
+          `;
+          break;
+
+        case 'END':
+          badge.innerText = 'DISCONNECTED';
+          badge.style.color = 'var(--text-muted)';
+          if(callTimerInterval) clearInterval(callTimerInterval);
+          addCallSystemMessage("📞 Outbound call disconnected.");
+          container.innerHTML = `<button class="btn btn-secondary" onclick="resetCallSimulation()">🔄 Restart Simulation</button>`;
+          break;
+      }
+    }
+
+    function renderCallControls() {
+      const container = document.getElementById('call-options-container');
+      container.innerHTML = `
+        <button class="btn btn-secondary" onclick="chooseCallDialog('Yes, speaking.', 'AUTH')">Yes, speaking</button>
+        <button class="btn btn-secondary" onclick="chooseCallDialog('Who is this? What is this about?', 'GREETING_REPLY_WHO')">Who is this?</button>
+        <button class="btn btn-secondary" onclick="chooseCallDialog('No, this is wrong number.', 'END', {toolName: 'mark_disposition', args: {customer_id: 'cust_rahul_001', disposition_code: 'WRONG_NUMBER', call_notes: 'Recipient confirmed wrong number.'}})">Wrong number</button>
+        <button class="btn btn-secondary" onclick="chooseCallDialog('Rahul is not here, this is his brother.', 'END', {toolName: 'mark_disposition', args: {customer_id: 'cust_rahul_001', disposition_code: 'THIRD_PARTY', call_notes: 'Relative answered, refused disclosure.'}})">Relative answered</button>
+      `;
+    }
+
+    async function handleAuthFailureSimulation(userText) {
+      addCallBubble('user', userText);
+      document.getElementById('call-options-container').innerHTML = `<div class="chat-bubble-system" style="margin: 0 auto;">Maya is checking database...</div>`;
+      
+      setTimeout(async () => {
+        simAuthAttempts++;
+        addCallSystemMessage(`[System API Hook: verify_customer(cust_rahul_001, dob="01-01-2000")]`);
+        await triggerSimulatedAPICall('verify_customer', {customer_id: 'cust_rahul_001', dob: '01-01-2000'});
+        
+        if (simAuthAttempts < 2) {
+          addCallBubble('bot', "I'm sorry, those details do not match our records. Let's try once more. Can you please confirm your date of birth or last 4 digits of PAN?");
+          document.getElementById('call-options-container').innerHTML = `
+            <button class="btn btn-secondary" onclick="chooseCallDialog('My DOB is 15-08-1990.', 'DEBT_PRESENTATION', {toolName: 'verify_customer', args: {customer_id: 'cust_rahul_001', dob: '15-08-1990'}})">Verify with correct DOB (15-08-1990)</button>
+            <button class="btn btn-secondary" onclick="handleAuthFailureSimulation('My DOB is 1st January 2000.')">Provide wrong details again</button>
+          `;
+        } else {
+          addCallBubble('bot', "I apologize, but we are unable to verify your identity at this time. Please contact our support team. Thank you, goodbye.");
+          setTimeout(async () => {
+            addCallSystemMessage(`[System API Hook: mark_disposition(UNVERIFIED)]`);
+            await triggerSimulatedAPICall('mark_disposition', {
+              customer_id: 'cust_rahul_001',
+              disposition_code: 'UNVERIFIED',
+              call_notes: 'Failed identity verification twice.'
+            });
+            simState = 'END';
+            renderCallSpeechAndControls();
+          }, 1000);
+        }
+      }, 1000);
+    }
+
+    async function handlePTPSimulation(method) {
+      addCallBubble('user', `I'll pay via ${method}.`);
+      document.getElementById('call-options-container').innerHTML = `<div class="chat-bubble-system" style="margin: 0 auto;">Maya is logging PTP & sending link...</div>`;
+      
+      // Fetch tomorrow's date
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const yyyy = tomorrow.getFullYear();
+      const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
+      const dd = String(tomorrow.getDate()).padStart(2, '0');
+      const dateStr = `${yyyy}-${mm}-${dd}`;
+
+      setTimeout(async () => {
+        addCallSystemMessage(`[System API Hook: log_promise_to_pay(cust_rahul_001, date=${dateStr}, amount=8499)]`);
+        await triggerSimulatedAPICall('log_promise_to_pay', {customer_id: 'cust_rahul_001', ptp_date: dateStr, ptp_amount: 8499});
+        
+        addCallSystemMessage(`[System API Hook: send_payment_link(cust_rahul_001, method=${method})]`);
+        await triggerSimulatedAPICall('send_payment_link', {customer_id: 'cust_rahul_001', payment_method: method});
+        
+        addCallBubble('bot', "Thank you. I have sent the payment link to your registered phone number. Please pay by tonight to avoid further late fees. Have a great day, goodbye.");
+        
+        setTimeout(async () => {
+          addCallSystemMessage(`[System API Hook: mark_disposition(PTP)]`);
+          await triggerSimulatedAPICall('mark_disposition', {
+            customer_id: 'cust_rahul_001',
+            disposition_code: 'PTP',
+            call_notes: `Spoke to Rahul. Verified identity. Logged PTP of ₹8499 for ${dateStr} via ${method}. payment link SMS triggered.`
+          });
+          simState = 'END';
+          renderCallSpeechAndControls();
+        }, 1000);
+      }, 1000);
+    }
+
+    async function handlePartialPTPSimulation() {
+      addCallBubble('user', "Yes, I can pay ₹4,000 today.");
+      document.getElementById('call-options-container').innerHTML = `<div class="chat-bubble-system" style="margin: 0 auto;">Maya is logging PTP & sending link...</div>`;
+      
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const yyyy = tomorrow.getFullYear();
+      const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
+      const dd = String(tomorrow.getDate()).padStart(2, '0');
+      const dateStr = `${yyyy}-${mm}-${dd}`;
+
+           setTimeout(async () => {
+             addCallSystemMessage(`[System API Hook: log_promise_to_pay(cust_rahul_001, date=${dateStr}, amount=4000)]`);
+             await triggerSimulatedAPICall('log_promise_to_pay', {customer_id: 'cust_rahul_001', ptp_date: dateStr, ptp_amount: 4000});
+             
+             addCallSystemMessage(`[System API Hook: send_payment_link(cust_rahul_001, method=Any)]`);
+             await triggerSimulatedAPICall('send_payment_link', {customer_id: 'cust_rahul_001', payment_method: 'Any'});
+             
+             addCallBubble('bot', "Thank you. I have logged your partial promise of ₹4,000 and sent the payment link. Please clear it by tonight. Have a good day, goodbye.");
+             
+             setTimeout(async () => {
+               addCallSystemMessage(`[System API Hook: mark_disposition(PTP)]`);
+               await triggerSimulatedAPICall('mark_disposition', {
+                 customer_id: 'cust_rahul_001',
+                 disposition_code: 'PTP',
+                 call_notes: `Spoke to Rahul. Agreed on partial PTP of ₹4000 for ${dateStr}. payment link SMS triggered.`
+               });
+               simState = 'END';
+               renderCallSpeechAndControls();
+             }, 1000);
+           }, 1000);
+         }
+
+         function resetCallSimulation() {
+           simState = 'IDLE';
+           document.getElementById('call-state-badge').innerText = 'IDLE';
+           document.getElementById('call-state-badge').style.color = 'var(--text-muted)';
+           document.getElementById('call-duration').innerText = '00:00';
+           document.getElementById('call-chat-area').innerHTML = `<div class="chat-bubble-system">Click "Start Outbound Call" to begin simulating the collection call for Rahul Sharma.</div>`;
+           document.getElementById('call-options-container').innerHTML = `<button class="btn btn-primary" onclick="startInteractiveCall()">📞 Start Outbound Call</button>`;
+         }
+       </script>
+</body>
+</html>

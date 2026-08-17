@@ -1,0 +1,41 @@
+{
+  "type": "function",
+  "messages": [
+    {
+      "type": "request-start",
+      "content": "One second, verifying your details in our system..."
+    },
+    {
+      "type": "request-complete",
+      "content": "Verification completed."
+    },
+    {
+      "type": "request-failed",
+      "content": "Sorry, verification failed due to a system issue."
+    }
+  ],
+  "function": {
+    "name": "verify_customer",
+    "description": "Verifies customer identity via Date of Birth (DD-MM-YYYY) or the last 4 characters of their PAN card.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "customer_id": {
+          "type": "string",
+          "description": "Unique database ID of the customer. Use 'cust_rahul_001' for Rahul Sharma."
+        },
+        "dob": {
+          "type": "string",
+          "description": "Customer's Date of Birth (e.g., '15-08-1990' or '15 August 1990')."
+        },
+        "last4PAN": {
+          "type": "string",
+          "description": "Last 4 characters of customer's PAN card (e.g., '5241')."
+        }
+      },
+      "required": [
+        "customer_id"
+      ]
+    }
+  }
+}

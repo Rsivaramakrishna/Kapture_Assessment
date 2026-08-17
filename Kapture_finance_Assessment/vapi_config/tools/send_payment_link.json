@@ -1,0 +1,33 @@
+{
+  "type": "function",
+  "messages": [
+    {
+      "type": "request-start",
+      "content": "Sending the secure payment link to your registered mobile number..."
+    },
+    {
+      "type": "request-complete",
+      "content": "Sent. Please check your messages."
+    }
+  ],
+  "function": {
+    "name": "send_payment_link",
+    "description": "Sends a secure payment link via SMS or WhatsApp to the customer's registered mobile number.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "customer_id": {
+          "type": "string",
+          "description": "Unique database ID of the customer (e.g. cust_rahul_001)."
+        },
+        "payment_method": {
+          "type": "string",
+          "description": "Preferred payment method (e.g., 'UPI', 'Card', 'NetBanking', 'Any')."
+        }
+      },
+      "required": [
+        "customer_id"
+      ]
+    }
+  }
+}

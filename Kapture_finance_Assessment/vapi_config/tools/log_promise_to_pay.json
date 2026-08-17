@@ -1,0 +1,39 @@
+{
+  "type": "function",
+  "messages": [
+    {
+      "type": "request-start",
+      "content": "Logging your payment commitment in our records..."
+    },
+    {
+      "type": "request-complete",
+      "content": "I've successfully logged your payment promise."
+    }
+  ],
+  "function": {
+    "name": "log_promise_to_pay",
+    "description": "Logs the date and amount the customer has promised to pay their overdue EMI in the CRM database.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "customer_id": {
+          "type": "string",
+          "description": "Unique database ID of the customer (e.g. cust_rahul_001)."
+        },
+        "ptp_date": {
+          "type": "string",
+          "description": "Date by which the customer promises to pay (format: YYYY-MM-DD)."
+        },
+        "ptp_amount": {
+          "type": "number",
+          "description": "Amount customer promised to pay (e.g., 8499)."
+        }
+      },
+      "required": [
+        "customer_id",
+        "ptp_date",
+        "ptp_amount"
+      ]
+    }
+  }
+}
